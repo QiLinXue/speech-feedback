@@ -206,4 +206,34 @@ app.get("/api/getEmotions", (req, res) => {
 //   console.log(result.body);
 // });
 
+app.get("/api/getAudioLength", (req, res) => {
+  var wavFileInfo = require("wav-file-info");
+
+  wavFileInfo.infoByFilename("speak.wav", function(err, info) {
+    if (err) throw err;
+    res.send({ audioLength: info.duration });
+  });
+});
+
+app.get("/api/getWPM/:text", (req, res) => {
+  var length = 0;
+  var inputText = req.params.text;
+  console.log(inputText);
+
+  var wavFileInfo = require("wav-file-info");
+
+  wavFileInfo.infoByFilename("speak.wav", function(err, info) {
+    if (err) throw err;
+    length = info.duration;
+    words = inputText.split(" ").length;
+    var WPM = words / (length / 60);
+    var WPM = Math.round(WPM);
+    //console.log(length);
+    res.send({ WPM: WPM });
+  });
+
+  //var WPM = inputText / length;
+  //res.send(WPM);
+});
+
 app.listen(8080, () => console.log("Listening on port 8080!"));

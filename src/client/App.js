@@ -6,7 +6,10 @@ export default class App extends Component {
     inputText: null,
     transcribed: null,
     positivity: null,
-    keyPhrases: null
+    keyPhrases: null,
+    audioLength: null,
+    WPM: null,
+    test: [1, 2, 3, 4, 5, 6]
   };
 
   componentDidMount() {
@@ -35,6 +38,12 @@ export default class App extends Component {
       .then(user => this.setState({ keyPhrases: user.keyPhrases }));
   }
 
+  getAudioLength() {
+    fetch("/api/getAudioLength")
+      .then(res => res.json())
+      .then(user => this.setState({ audioLength: user.audioLength }));
+  }
+
   //Call API (audio transcription text)
   ///////////////////////////////////////////////////////////
 
@@ -48,6 +57,12 @@ export default class App extends Component {
     fetch(`/api/getKeyPhrases/${this.state.transcribed}`)
       .then(res => res.json())
       .then(user => this.setState({ keyPhrases: user.keyPhrases }));
+  }
+
+  getWPM2() {
+    fetch(`/api/getWPM/${this.state.transcribed}`)
+      .then(res => res.json())
+      .then(user => this.setState({ WPM: user.WPM }));
   }
 
   //Submit Button
@@ -65,6 +80,7 @@ export default class App extends Component {
 
     this.getPositivity2();
     this.getKeyPhrases2();
+    this.getWPM2();
   };
 
   //Transcribes speak.wav
@@ -93,6 +109,8 @@ export default class App extends Component {
     const { transcribed } = this.state;
     const { positivity } = this.state;
     const { keyPhrases } = this.state;
+    const { WPM } = this.state;
+    const { test } = this.state;
 
     return (
       <div>
@@ -100,7 +118,7 @@ export default class App extends Component {
         <h1>Text: {inputText}</h1>
         <h1>Positivity: {positivity}</h1>
         <h1>Key Words: {keyPhrases} </h1>
-
+        <h1>WPM: {WPM}</h1>
         <form>
           <label>
             Input Sentence:
@@ -129,7 +147,13 @@ export default class App extends Component {
           type="submit"
           value="Analyze Audio Transcriptions"
         />
+        {test.map(test => (
+          <li key={test}>{test}</li>
+        ))}
       </div>
     );
   }
+
+  //FUNCTIONS
+  ///////////////////////////////////////////////////////////
 }

@@ -5,7 +5,7 @@ export default class App extends Component {
   state = {
     inputText: null,
     transcribed:
-      "Almost 20 years have passed since 9-11 It is time to take stock of where we stand and stop and think It is time to ask ourselves have the assumptions and policies we developed in the wake of those tragic events truly made us more secure Have they made our societies both in Europe and in the United States more resilient I've worked all my life in the field of security and defense and I am convinced that now more than ever we need to radically reframe the way we think and act about security and especially about international security By international security I actually mean what we do how we prepare our countries to better respond and prevent external threats and how we protect our citizens The key to both is to focus on protecting civilians both in our own countries and in those where we are present in the name of security",
+      "I used to be a happy kid. I would always go to the park and play with my friends. But now i have grown up to become a serial killer. I have killed both my parents and i live in sorrow and guilt everyday. My sins are far too great for my existence on this planet. I want to kill myself!",
     positivity: null,
     keyPhrases: null,
     audioLength: null,

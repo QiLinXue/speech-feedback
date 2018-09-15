@@ -125,7 +125,10 @@ export default class App extends Component {
     const { positivity } = this.state;
     const { keyPhrases } = this.state;
     if(this.state.transcribed!=null){
-      this.function(this.state.transcribed,2);
+     var testing= this.function(this.state.transcribed,2);
+     for(var count=0;count<testing.length;count++){
+          console.log(testing[count]);
+     }
     }
     return (
       <div>

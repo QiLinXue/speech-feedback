@@ -47,12 +47,8 @@ export default class App extends Component {
 
     return (
       <div>
-<<<<<<< HEAD
-        <h1>Text: {inputText} </h1>
-=======
         <h1>Transliteration: {transcribed}</h1>
         <h1>Text: {inputText}</h1>
->>>>>>> afc4d636e8486998f97aa8e1eeb78ee60d20ea97
         <h1>Language: {lang}</h1>
 
         <form>

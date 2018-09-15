@@ -18,7 +18,7 @@ let path = "/text/analytics/v2.0/";
 
 let response_handler = function(response) {};
 
-app.get("/api/languageDetection/text", (req, res) => {
+app.get("/api/languageDetection/:text", (req, res) => {
   var documents = {
     documents: [{ id: "1", text: req.params.text }]
   };

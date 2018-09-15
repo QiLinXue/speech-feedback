@@ -6,16 +6,20 @@
   "scripts": {
     "start": "node src/server/index.js",
     "build": "webpack --mode production",
-    "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
+    "client": "webpack-dev-server --mode development --devtool inline-source-map",
     "server": "nodemon src/server/index.js",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
-  "author": "Sandeep Raveesh",
-  "license": "ISC",
+  "author": "QiLin Xue, Alex Zhang, Ethan Wang, Angel Li",
+  "license": "MIT",
   "dependencies": {
+    "dotenv": "^6.0.0",
     "express": "^4.16.3",
+    "ms-bing-speech-service": "^2.0.5",
     "react": "^16.3.1",
-    "react-dom": "^16.3.1"
+    "react-dom": "^16.3.1",
+    "stream-buffers": "^3.0.2",
+    "websocket": "^1.0.26"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",

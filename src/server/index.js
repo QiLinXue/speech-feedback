@@ -26,7 +26,7 @@ app.get("/api/transcribeSample", (req, res) => {
   (async function() {
     const options = {
       language: "en-US",
-      subscriptionKey: "1f7e738aa49a4270937366dfe045b3fd"
+      subscriptionKey: "4b752a2a18514e5a867bb1119fb01890"
     };
 
     const recognizer = new speechService(options);

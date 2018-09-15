@@ -4,7 +4,8 @@ import "./app.css";
 export default class App extends Component {
   state = {
     lang: null,
-    inputText: null
+    inputText: null,
+    transcribed: "null"
   };
 
   getLanguage() {
@@ -13,9 +14,17 @@ export default class App extends Component {
       .then(user => this.setState({ lang: user.lang }));
   }
 
+  getAudioText() {
+    //Test Only
+    fetch("/api/test")
+      .then(res => res.json())
+      .then(user => this.setState({ transcribed: user.transcribed }));
+  }
+
   componentDidMount() {
     //Get Language
     this.getLanguage();
+    this.getAudioText();
   }
 
   handleSubmit = event => {
@@ -34,9 +43,11 @@ export default class App extends Component {
   render() {
     const { lang } = this.state;
     const { inputText } = this.state;
+    const { transcribed } = this.state;
 
     return (
       <div>
+        <h1>Transliteration: {transcribed}</h1>
         <h1>Text: {inputText}</h1>
         <h1>Language: {lang}</h1>
 

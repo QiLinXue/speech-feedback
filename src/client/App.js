@@ -16,7 +16,7 @@ export default class App extends Component {
 
   getAudioText() {
     //Test Only
-    fetch("/api/test")
+    fetch("/api/transcribeSample")
       .then(res => res.json())
       .then(user => this.setState({ transcribed: user.transcribed }));
   }
@@ -24,14 +24,21 @@ export default class App extends Component {
   componentDidMount() {
     //Get Language
     this.getLanguage();
-    this.getAudioText();
+    // this.getAudioText();
   }
 
-  handleSubmit = event => {
+  handleSubmitLanguage = event => {
     event.preventDefault(); //weird thing with react so states don't revert to original
 
     //Get Language
     this.getLanguage();
+  };
+
+  handleSubmitTranscribe = event => {
+    event.preventDefault();
+
+    //Transcribe speak.wav
+    this.getAudioText();
   };
 
   handleInputUpdate = evt => {
@@ -62,8 +69,18 @@ export default class App extends Component {
             />
           </label>
 
-          <input onClick={this.handleSubmit} type="submit" value="Submit" />
+          <input
+            onClick={this.handleSubmitLanguage}
+            type="submit"
+            value="Find Language"
+          />
         </form>
+
+        <input
+          onClick={this.handleSubmitTranscribe}
+          type="submit"
+          value="Transcribe Audio"
+        />
       </div>
     );
   }

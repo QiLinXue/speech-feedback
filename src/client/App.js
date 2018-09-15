@@ -5,14 +5,15 @@ export default class App extends Component {
   state = {
     inputText: null,
     transcribed:
-      "Almost 20 years have passed since 9-11 It is time to take stock of where we stand and stop and think It is time to ask ourselves have the assumptions and policies we developed in the wake of those tragic events truly made us more secure Have they made our societies both in Europe and in the United States more resilient I've worked all my life in the field of security and defense and I am convinced that now more than ever we need to radically reframe the way we think and act about security and especially about international security By international security I actually mean what we do how we prepare our countries to better respond and prevent external threats and how we protect our citizens The key to both is to focus on protecting civilians both in our own countries and in those where we are present in the name of security",
+      "hi uh my name is um",
     positivity: null,
     keyPhrases: null,
     audioLength: null,
     WPM: null,
     positivityA: null,
     positivityB: null,
-    positivityC: null
+    positivityC: null,
+    fillNum: 0
   };
 
   componentDidMount() {
@@ -146,7 +147,30 @@ export default class App extends Component {
     //return out;
     this.setState({ transcribedList: out });
   }
-
+  function(variable){
+    var index=0;
+    var num=0;
+    while(index<variable.length){
+      index=variable.indexOf("um",index);
+      if(index==-1){
+        break;
+      }
+      index++;
+      num++;
+    }
+    index=0;
+    while(index<variable.length){
+      index=variable.indexOf("uh",index);
+      if(index==-1){
+        break;
+      }
+      index++;
+      num++;
+    }
+    console.log(num);
+    return num;
+   
+  }
   //What it actually returns - JSX code (combination of html and javascript)
   ///////////////////////////////////////////////////////////
   render() {
@@ -161,7 +185,11 @@ export default class App extends Component {
     const { positivityA } = this.state;
     const { positivityB } = this.state;
     const { positivityC } = this.state;
-
+    if(transcribed!=null){
+     console.log("ready");
+        this.function(this.state.transcribed);
+    }
+   
     // if(this.state.transcribed!=null){
     //   this.function(this.state.transcribed,2);
     // }

@@ -115,6 +115,7 @@ export default class App extends Component {
     for(var count=0;count<out.length;count++){
       console.log(out[count]);
     }
+    return out;
   }
   render() {
     //Define the prefix ahead of time. Usually we have to call this.state.inputText

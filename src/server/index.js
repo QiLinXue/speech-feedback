@@ -73,7 +73,7 @@ app.get("/api/test", (req, res) => {
       });
 
       recognizer
-        .sendFile('speak.wav')
+        .sendFile("speak.wav")
         .then(_ => console.log("file sent."))
         .catch(console.error);
     })

@@ -21,6 +21,7 @@
     "react-dom": "^16.3.1",
     "stream-buffers": "^3.0.2",
     "video-indexer": "^1.0.0",
+    "wav-file-info": "0.0.8",
     "websocket": "^1.0.26"
   },
   "devDependencies": {

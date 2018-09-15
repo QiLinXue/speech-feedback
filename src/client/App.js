@@ -4,9 +4,16 @@ import "./app.css";
 export default class App extends Component {
   state = {
     inputText: null,
-    transcribed: "test test test",
+    transcribed:
+      "hi uh my name is um",
     positivity: null,
-    keyPhrases: null
+    keyPhrases: null,
+    audioLength: null,
+    WPM: null,
+    positivityA: null,
+    positivityB: null,
+    positivityC: null,
+    fillNum: 0
   };
 
   componentDidMount() {
@@ -15,40 +22,61 @@ export default class App extends Component {
   }
 
   //Call API (user inputted text)
-  ///////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////
 
+  //Transcribe Audio
   getAudioText() {
     fetch("/api/transcribeSample")
       .then(res => res.json())
       .then(user => this.setState({ transcribed: user.transcribed }));
-     
   }
 
-  getPositivity() {
-    fetch(`/api/getPositivity/${this.state.inputText}`)
+  //Get Audio Length
+  getAudioLength() {
+    fetch("/api/getAudioLength")
+      .then(res => res.json())
+      .then(user => this.setState({ audioLength: user.audioLength }));
+  }
+
+  //Get WPM
+  getWPM(text) {
+    fetch(`/api/getWPM/${text}`)
+      .then(res => res.json())
+      .then(user => this.setState({ WPM: user.WPM }));
+  }
+
+  //Get Key Phrases
+  getKeyPhrases(text) {
+    fetch(`/api/getKeyPhrases/${text}`)
+      .then(res => res.json())
+      .then(user => this.setState({ keyPhrases: user.keyPhrases }));
+  }
+
+  //Get Sentiment Analysis
+  getPositivity(text) {
+    fetch(`/api/getPositivity/${text}`)
       .then(res => res.json())
       .then(user => this.setState({ positivity: user.positivity }));
   }
 
-  getKeyPhrases() {
-    fetch(`/api/getKeyPhrases/${this.state.inputText}`)
-      .then(res => res.json())
-      .then(user => this.setState({ keyPhrases: user.keyPhrases }));
-  }
+  //Call mini API (segmental sentiment)
+  getMiniPositivity(text) {
+    var temp = text;
+    var length = Math.floor(temp.length / 3);
 
-  //Call API (audio transcription text)
-  ///////////////////////////////////////////////////////////
+    var a = temp.substring(length * 0, length * 1);
+    var b = temp.substring(length, length * 2);
+    var c = temp.substring(length * 2, length * 3);
 
-  getPositivity2() {
-    fetch(`/api/getPositivity/${this.state.transcribed}`)
+    fetch(`/api/getPositivity/${b}`)
       .then(res => res.json())
-      .then(user => this.setState({ positivity: user.positivity }));
-  }
-
-  getKeyPhrases2() {
-    fetch(`/api/getKeyPhrases/${this.state.transcribed}`)
+      .then(user => this.setState({ positivityB: user.positivity }));
+    fetch(`/api/getPositivity/${c}`)
       .then(res => res.json())
-      .then(user => this.setState({ keyPhrases: user.keyPhrases }));
+      .then(user => this.setState({ positivityC: user.positivity }));
+    fetch(`/api/getPositivity/${a}`)
+      .then(res => res.json())
+      .then(user => this.setState({ positivityA: user.positivity }));
   }
 
   //Submit Button
@@ -57,15 +85,19 @@ export default class App extends Component {
   handleSubmitTextAnalyze = event => {
     event.preventDefault(); //weird thing with react so states don't revert to original
 
-    this.getPositivity();
-    this.getKeyPhrases();
+    this.getPositivity(this.state.inputText);
+    this.getKeyPhrases(this.state.inputText);
+    this.getWPM(this.state.inputText);
+    this.getMiniPositivity(this.state.inputText);
   };
 
   handleSubmitTranscriptionAnalyze = event => {
     event.preventDefault();
 
-    this.getPositivity2();
-    this.getKeyPhrases2();
+    this.getPositivity(this.state.transcribed, this.state.positivity);
+    this.getKeyPhrases(this.state.transcribed);
+    this.getWPM(this.state.transcribed);
+    this.getMiniPositivity(this.state.transcribed);
   };
 
   //Transcribes speak.wav
@@ -85,38 +117,62 @@ export default class App extends Component {
     });
   };
 
+  //Code written by Alex to seperate String
+  seperateString(variable, length) {
+    console.log(variable);
+
+    var seperate = variable.split(" ");
+    var out = new Array(Math.round(seperate.length / length - 0.1));
+
+    console.log(out.length);
+    var index = 0;
+    var pos = 0;
+    while (true) {
+      var each = "";
+      for (var count = 0; count < length && index < seperate.length; count++) {
+        seperate[index] = seperate[index].replace(".", "");
+        each = each + seperate[index] + " ";
+        index++;
+      }
+      console.log(each);
+      out[pos] = each;
+      pos++;
+      if (index == seperate.length) {
+        break;
+      }
+    }
+    // for(var count=0;count<out.length;count++){
+    //   console.log(out[count]);
+    // }
+    //return out;
+    this.setState({ transcribedList: out });
+  }
+  function(variable){
+    var index=0;
+    var num=0;
+    while(index<variable.length){
+      index=variable.indexOf("um",index);
+      if(index==-1){
+        break;
+      }
+      index++;
+      num++;
+    }
+    index=0;
+    while(index<variable.length){
+      index=variable.indexOf("uh",index);
+      if(index==-1){
+        break;
+      }
+      index++;
+      num++;
+    }
+    console.log(num);
+    return num;
+   
+  }
   //What it actually returns - JSX code (combination of html and javascript)
   ///////////////////////////////////////////////////////////
-  function(variable,length){
-    console.log(variable);
-    
-    var seperate=variable.split(" ");
-    var out=new Array(Math.round(seperate.length/length-0.1));
-    
-    console.log(out.length);
-    var index=0;
-    var pos=0;
-    while(true){
-      var each="";
-     for(var count=0;count<length&&index<seperate.length;count++){
-        seperate[index]=seperate[index].replace(".","");
-        each=each+seperate[index]+" ";
-        index++;
-     }
-     console.log(each);
-     out[pos]=each;
-     pos++;
-     if(index==seperate.length){
-       break;
-     }
-     
-     
-    }
-    for(var count=0;count<out.length;count++){
-      console.log(out[count]);
-    }
-    return out;
-  }
   render() {
     //Define the prefix ahead of time. Usually we have to call this.state.inputText
     //but if we call it at the beggining, it saves a lot of space
@@ -124,19 +180,32 @@ export default class App extends Component {
     const { transcribed } = this.state;
     const { positivity } = this.state;
     const { keyPhrases } = this.state;
-    if(this.state.transcribed!=null){
-     var testing= this.function(this.state.transcribed,2);
-     for(var count=0;count<testing.length;count++){
-          console.log(testing[count]);
-     }
+    const { WPM } = this.state;
+    const { transcribedList } = this.state;
+    const { positivityA } = this.state;
+    const { positivityB } = this.state;
+    const { positivityC } = this.state;
+    if(transcribed!=null){
+     console.log("ready");
+        this.function(this.state.transcribed);
     }
+   
+    // if(this.state.transcribed!=null){
+    //   this.function(this.state.transcribed,2);
+    // }
     return (
       <div>
         <h1>Transcribed: {transcribed}</h1>
         <h1>Text: {inputText}</h1>
-        <h1>Positivity: {positivity}</h1>
         <h1>Key Words: {keyPhrases} </h1>
-        
+        <h1>WPM: {WPM}</h1>
+        <h1>Overall Positivity: {positivity}</h1>
+        <ul>
+          <li>Beginning Positivity: {positivityA}</li>
+          <li>Middle Positivity: {positivityB}</li>
+          <li>End Positivity: {positivityC}</li>
+        </ul>
+
         <form>
           <label>
             Input Sentence:
@@ -168,4 +237,7 @@ export default class App extends Component {
       </div>
     );
   }
+
+  //FUNCTIONS
+  ///////////////////////////////////////////////////////////
 }

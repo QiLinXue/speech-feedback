@@ -20,41 +20,6 @@ let path = "/text/analytics/v2.0/";
 
 let response_handler = function(response) {};
 
-app.get("/api/languageDetection/:text", (req, res) => {
-  var documents = {
-    documents: [{ id: "1", text: req.params.text }]
-  };
-
-  let body = JSON.stringify(documents);
-
-  //Params
-  let request_params = {
-    method: "POST",
-    hostname: uri,
-    path: path + "languages",
-    headers: {
-      "Ocp-Apim-Subscription-Key": accessKeyTextAPI
-    }
-  };
-
-  //Request
-  let reqq = https.request(request_params, function(azureResponse) {
-    let body = "";
-
-    azureResponse.on("data", function(d) {
-      body += d;
-    });
-
-    azureResponse.on("end", function() {
-      let body_ = JSON.parse(body);
-      res.send({ lang: body_.documents[0].detectedLanguages[0].name }); //Send Data
-    });
-  });
-
-  reqq.write(body);
-  reqq.end();
-});
-
 app.get("/api/transcribeSample", (req, res) => {
   const speechService = require("ms-bing-speech-service");
 
@@ -184,26 +149,34 @@ app.get("/api/getEmotions", (req, res) => {
   //apiInstance.syncRecogniseTextEmotion(body, callback);
 });
 
-// const vindexer = require("video-indexer");
-// const Vindexer = new vindexer("891038eff2c84b1cbd2c33a47dac1713");
+app.get("/api/getAudioLength", (req, res) => {
+  var wavFileInfo = require("wav-file-info");
 
-// // Upload video via a URL and generate intelligent insights. If no URL is specified, the file should be passed as a multipart/form body content.
-// Vindexer.uploadVideo({
-//   // Optional
-//   videoUrl: "https://www.youtube.com/watch?v=B_jDx5fL0_k",
-//   name: "My video name",
-//   privacy: "Private",
-//   language: "English",
-//   externalId: "customvideoid",
-//   description: "Check out this great demo video!",
-//   partition: "demos"
-// }).then(function(result) {
-//   console.log(result.body);
-// });
+  wavFileInfo.infoByFilename("speak.wav", function(err, info) {
+    if (err) throw err;
+    res.send({ audioLength: info.duration });
+  });
+});
 
-// // Get full insights from previously-processed video
-// Vindexer.getBreakdown("your_video_id").then(function(result) {
-//   console.log(result.body);
-// });
+app.get("/api/getWPM/:text", (req, res) => {
+  var length = 0;
+  var inputText = req.params.text;
+  console.log(inputText);
+
+  var wavFileInfo = require("wav-file-info");
+
+  wavFileInfo.infoByFilename("speak.wav", function(err, info) {
+    if (err) throw err;
+    length = info.duration;
+    words = inputText.split(" ").length;
+    var WPM = words / (length / 60);
+    var WPM = Math.round(WPM);
+    //console.log(length);
+    res.send({ WPM: WPM });
+  });
+
+  //var WPM = inputText / length;
+  //res.send(WPM);
+});
 
 app.listen(8080, () => console.log("Listening on port 8080!"));

@@ -4,7 +4,7 @@ import "./app.css";
 export default class App extends Component {
   state = {
     inputText: null,
-    transcribed: null,
+    transcribed: "test test test",
     positivity: null,
     keyPhrases: null
   };
@@ -21,6 +21,7 @@ export default class App extends Component {
     fetch("/api/transcribeSample")
       .then(res => res.json())
       .then(user => this.setState({ transcribed: user.transcribed }));
+     
   }
 
   getPositivity() {
@@ -86,6 +87,35 @@ export default class App extends Component {
 
   //What it actually returns - JSX code (combination of html and javascript)
   ///////////////////////////////////////////////////////////
+  function(variable,length){
+    console.log(variable);
+    
+    var seperate=variable.split(" ");
+    var out=new Array(Math.round(seperate.length/length-0.1));
+    
+    console.log(out.length);
+    var index=0;
+    var pos=0;
+    while(true){
+      var each="";
+     for(var count=0;count<length&&index<seperate.length;count++){
+        seperate[index]=seperate[index].replace(".","");
+        each=each+seperate[index]+" ";
+        index++;
+     }
+     console.log(each);
+     out[pos]=each;
+     pos++;
+     if(index==seperate.length){
+       break;
+     }
+     
+     
+    }
+    for(var count=0;count<out.length;count++){
+      console.log(out[count]);
+    }
+  }
   render() {
     //Define the prefix ahead of time. Usually we have to call this.state.inputText
     //but if we call it at the beggining, it saves a lot of space
@@ -93,14 +123,16 @@ export default class App extends Component {
     const { transcribed } = this.state;
     const { positivity } = this.state;
     const { keyPhrases } = this.state;
-
+    if(this.state.transcribed!=null){
+      this.function(this.state.transcribed,2);
+    }
     return (
       <div>
         <h1>Transcribed: {transcribed}</h1>
         <h1>Text: {inputText}</h1>
         <h1>Positivity: {positivity}</h1>
         <h1>Key Words: {keyPhrases} </h1>
-
+        
         <form>
           <label>
             Input Sentence:

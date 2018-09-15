@@ -79,7 +79,7 @@ app.get("/api/transcribeSample", (req, res) => {
       console.log("recognizer is stopped.");
     });
 
-    await recognizer.sendFile("speak2.wav");
+    await recognizer.sendFile("speak.wav");
     console.log("file sent.");
   })();
 });

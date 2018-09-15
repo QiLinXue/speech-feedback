@@ -4,12 +4,15 @@ import "./app.css";
 export default class App extends Component {
   state = {
     inputText: null,
-    transcribed: null,
+    transcribed:
+      "Almost 20 years have passed since 9-11 It is time to take stock of where we stand and stop and think It is time to ask ourselves have the assumptions and policies we developed in the wake of those tragic events truly made us more secure Have they made our societies both in Europe and in the United States more resilient I've worked all my life in the field of security and defense and I am convinced that now more than ever we need to radically reframe the way we think and act about security and especially about international security By international security I actually mean what we do how we prepare our countries to better respond and prevent external threats and how we protect our citizens The key to both is to focus on protecting civilians both in our own countries and in those where we are present in the name of security",
     positivity: null,
     keyPhrases: null,
     audioLength: null,
     WPM: null,
-    test: [1, 2, 3, 4, 5, 6]
+    positivityA: null,
+    positivityB: null,
+    positivityC: null
   };
 
   componentDidMount() {
@@ -18,51 +21,61 @@ export default class App extends Component {
   }
 
   //Call API (user inputted text)
-  ///////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////
 
+  //Transcribe Audio
   getAudioText() {
     fetch("/api/transcribeSample")
       .then(res => res.json())
       .then(user => this.setState({ transcribed: user.transcribed }));
   }
 
-  getPositivity() {
-    fetch(`/api/getPositivity/${this.state.inputText}`)
-      .then(res => res.json())
-      .then(user => this.setState({ positivity: user.positivity }));
-  }
-
-  getKeyPhrases() {
-    fetch(`/api/getKeyPhrases/${this.state.inputText}`)
-      .then(res => res.json())
-      .then(user => this.setState({ keyPhrases: user.keyPhrases }));
-  }
-
+  //Get Audio Length
   getAudioLength() {
     fetch("/api/getAudioLength")
       .then(res => res.json())
       .then(user => this.setState({ audioLength: user.audioLength }));
   }
 
-  //Call API (audio transcription text)
-  ///////////////////////////////////////////////////////////
-
-  getPositivity2() {
-    fetch(`/api/getPositivity/${this.state.transcribed}`)
+  //Get WPM
+  getWPM(text) {
+    fetch(`/api/getWPM/${text}`)
       .then(res => res.json())
-      .then(user => this.setState({ positivity: user.positivity }));
+      .then(user => this.setState({ WPM: user.WPM }));
   }
 
-  getKeyPhrases2() {
-    fetch(`/api/getKeyPhrases/${this.state.transcribed}`)
+  //Get Key Phrases
+  getKeyPhrases(text) {
+    fetch(`/api/getKeyPhrases/${text}`)
       .then(res => res.json())
       .then(user => this.setState({ keyPhrases: user.keyPhrases }));
   }
 
-  getWPM2() {
-    fetch(`/api/getWPM/${this.state.transcribed}`)
+  //Get Sentiment Analysis
+  getPositivity(text) {
+    fetch(`/api/getPositivity/${text}`)
       .then(res => res.json())
-      .then(user => this.setState({ WPM: user.WPM }));
+      .then(user => this.setState({ positivity: user.positivity }));
+  }
+
+  //Call mini API (segmental sentiment)
+  getMiniPositivity(text) {
+    var temp = text;
+    var length = Math.floor(temp.length / 3);
+
+    var a = temp.substring(length * 0, length * 1);
+    var b = temp.substring(length, length * 2);
+    var c = temp.substring(length * 2, length * 3);
+
+    fetch(`/api/getPositivity/${b}`)
+      .then(res => res.json())
+      .then(user => this.setState({ positivityB: user.positivity }));
+    fetch(`/api/getPositivity/${c}`)
+      .then(res => res.json())
+      .then(user => this.setState({ positivityC: user.positivity }));
+    fetch(`/api/getPositivity/${a}`)
+      .then(res => res.json())
+      .then(user => this.setState({ positivityA: user.positivity }));
   }
 
   //Submit Button
@@ -71,16 +84,19 @@ export default class App extends Component {
   handleSubmitTextAnalyze = event => {
     event.preventDefault(); //weird thing with react so states don't revert to original
 
-    this.getPositivity();
-    this.getKeyPhrases();
+    this.getPositivity(this.state.inputText);
+    this.getKeyPhrases(this.state.inputText);
+    this.getWPM(this.state.inputText);
+    this.getMiniPositivity(this.state.inputText);
   };
 
   handleSubmitTranscriptionAnalyze = event => {
     event.preventDefault();
 
-    this.getPositivity2();
-    this.getKeyPhrases2();
-    this.getWPM2();
+    this.getPositivity(this.state.transcribed, this.state.positivity);
+    this.getKeyPhrases(this.state.transcribed);
+    this.getWPM(this.state.transcribed);
+    this.getMiniPositivity(this.state.transcribed);
   };
 
   //Transcribes speak.wav
@@ -100,6 +116,37 @@ export default class App extends Component {
     });
   };
 
+  //Code written by Alex to seperate String
+  seperateString(variable, length) {
+    console.log(variable);
+
+    var seperate = variable.split(" ");
+    var out = new Array(Math.round(seperate.length / length - 0.1));
+
+    console.log(out.length);
+    var index = 0;
+    var pos = 0;
+    while (true) {
+      var each = "";
+      for (var count = 0; count < length && index < seperate.length; count++) {
+        seperate[index] = seperate[index].replace(".", "");
+        each = each + seperate[index] + " ";
+        index++;
+      }
+      console.log(each);
+      out[pos] = each;
+      pos++;
+      if (index == seperate.length) {
+        break;
+      }
+    }
+    // for(var count=0;count<out.length;count++){
+    //   console.log(out[count]);
+    // }
+    //return out;
+    this.setState({ transcribedList: out });
+  }
+
   //What it actually returns - JSX code (combination of html and javascript)
   ///////////////////////////////////////////////////////////
   render() {
@@ -110,15 +157,27 @@ export default class App extends Component {
     const { positivity } = this.state;
     const { keyPhrases } = this.state;
     const { WPM } = this.state;
-    const { test } = this.state;
+    const { transcribedList } = this.state;
+    const { positivityA } = this.state;
+    const { positivityB } = this.state;
+    const { positivityC } = this.state;
 
+    // if(this.state.transcribed!=null){
+    //   this.function(this.state.transcribed,2);
+    // }
     return (
       <div>
         <h1>Transcribed: {transcribed}</h1>
         <h1>Text: {inputText}</h1>
-        <h1>Positivity: {positivity}</h1>
         <h1>Key Words: {keyPhrases} </h1>
         <h1>WPM: {WPM}</h1>
+        <h1>Overall Positivity: {positivity}</h1>
+        <ul>
+          <li>Beginning Positivity: {positivityA}</li>
+          <li>Middle Positivity: {positivityB}</li>
+          <li>End Positivity: {positivityC}</li>
+        </ul>
+
         <form>
           <label>
             Input Sentence:
@@ -147,9 +206,6 @@ export default class App extends Component {
           type="submit"
           value="Analyze Audio Transcriptions"
         />
-        {test.map(test => (
-          <li key={test}>{test}</li>
-        ))}
       </div>
     );
   }

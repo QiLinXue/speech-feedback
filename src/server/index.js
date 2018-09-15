@@ -44,7 +44,7 @@ app.get("/api/transcribeSample", (req, res) => {
       console.log("recognizer is stopped.");
     });
 
-    await recognizer.sendFile("speak.wav");
+    await recognizer.sendFile("speak1.wav");
     console.log("file sent.");
   })();
 });

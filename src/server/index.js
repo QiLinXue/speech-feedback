@@ -22,7 +22,7 @@ app.get("/api/languageDetection/:text", (req, res) => {
   var documents = {
     documents: [{ id: "1", text: req.params.text }]
   };
-
+  //console.log(text);
   let body = JSON.stringify(documents);
 
   //Params
@@ -45,7 +45,9 @@ app.get("/api/languageDetection/:text", (req, res) => {
 
     azureResponse.on("end", function() {
       let body_ = JSON.parse(body);
-      res.send({ lang: body_.documents[0].detectedLanguages[0].name }); //Send Data
+       res.send({ lang: body_.documents[0].detectedLanguages[0].name }); //Send Data
+     // res.send({ lang: body_ }); //Send Data
+
     });
   });
 

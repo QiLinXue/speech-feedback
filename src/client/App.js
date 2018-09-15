@@ -32,12 +32,12 @@ export default class App extends Component {
   };
 
   render() {
-    const { lang } = this.state;
+    const { lang } = (this.state);
     const { inputText } = this.state;
 
     return (
       <div>
-        <h1>Text: {inputText}</h1>
+        <h1>Text: {inputText} </h1>
         <h1>Language: {lang}</h1>
 
         <form>

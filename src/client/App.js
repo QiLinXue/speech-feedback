@@ -4,7 +4,7 @@ import "./app.css";
 export default class App extends Component {
   state = {
     inputText: null,
-    transcribed: "I am um an adult um yeah.",
+    transcribed: null,
     positivity: null,
     keyPhrases: [],
     audioLength: null,
@@ -12,7 +12,8 @@ export default class App extends Component {
     positivityA: null,
     positivityB: null,
     positivityC: null,
-    fillNum: 0
+    fillNum: null,
+    clicked: false
   };
 
   componentDidMount() {
@@ -97,9 +98,11 @@ export default class App extends Component {
   //Transcribes speak.wav
   ///////////////////////////////////////////////////////////
   handleSubmitTranscribe = event => {
+    if (this.state.clicked) return;
     event.preventDefault();
     console.log("transcript submition");
     //Transcribe speak.wav
+    this.setState({ clicked: true });
     this.getAudioText();
     console.log("2");
   };
@@ -167,15 +170,30 @@ export default class App extends Component {
           <div className="container">
             <h1 className="display-4">Speech Teech</h1>
             <p className="lead">
-              This is a modified jumbotron that occupies the entire horizontal
-              space of its parent.
+              {(transcribed === null &&
+                "Giving You The Best Feedback Ever! Click transcribe and your audio will appear here!") ||
+                transcribed}
             </p>
           </div>
         </div>
+        <input
+          onClick={this.handleSubmitTranscribe}
+          type="submit"
+          className="btn btn-primary btn-lg btn-block"
+          value="Transcribe Audio"
+        />
+        <input
+          onClick={this.handleSubmitTranscriptionAnalyze}
+          type="submit"
+          className="btn btn-success btn-lg btn-block"
+          value="Analyze Audio Transcriptions"
+        />
         <div className="card">
           <div className="card-body">
             <h5 className="card-title">Words Per Minute</h5>
-            <span className="btn btn-primary">{WPM} WPM</span>
+            <span className="btn btn-primary">
+              {WPM} {WPM === null && "TBA"} WPM
+            </span>
             <p className="card-text">
               Some quick example text to build on the card title and make up the
               bulk of the card's content.
@@ -186,7 +204,10 @@ export default class App extends Component {
         <div className="card">
           <div className="card-body">
             <h5 className="card-title">Overall Positivity</h5>
-            <span className="btn btn-primary">{positivity}% Positive</span>
+            <span className="btn btn-primary">
+              {positivity}
+              {positivity === null && "TBA"}% Positive
+            </span>
             <p className="card-text">
               Some quick example text to build on the card title and make up the
               bulk of the card's content.
@@ -197,7 +218,10 @@ export default class App extends Component {
         <div className="card">
           <div className="card-body">
             <h5 className="card-title">Filler Words</h5>
-            <span className="btn btn-primary">{fillNum} Stutters</span>
+            <span className="btn btn-primary">
+              {fillNum}
+              {fillNum === null && "TBA"} Stutters
+            </span>
             <p className="card-text">
               Some quick example text to build on the card title and make up the
               bulk of the card's content.
@@ -223,18 +247,6 @@ export default class App extends Component {
           </div>
         </div>
 
-        <input
-          onClick={this.handleSubmitTranscribe}
-          type="submit"
-          className="btn btn-primary btn-lg btn-block"
-          value="Transcribe Audio"
-        />
-        <input
-          onClick={this.handleSubmitTranscriptionAnalyze}
-          type="submit"
-          className="btn btn-success btn-lg btn-block"
-          value="Analyze Audio Transcriptions"
-        />
         <input
           type="file"
           accept="audio/*"

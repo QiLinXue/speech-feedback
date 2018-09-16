@@ -16,6 +16,7 @@
     "deep-affects": "github:SEERNET/deepaffects-node",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
+    "fs": "0.0.1-security",
     "ms-bing-speech-service": "^2.0.5",
     "react": "^16.3.1",
     "react-dom": "^16.3.1",

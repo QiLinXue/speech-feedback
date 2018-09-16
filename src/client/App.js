@@ -171,6 +171,13 @@ export default class App extends Component {
     return num;
    
   }
+  readWav(){
+    console.log("start");
+    var reader=new FileReader();
+    const file=require('fs').readFile("speak.wav");
+    
+    
+  }
   //What it actually returns - JSX code (combination of html and javascript)
   ///////////////////////////////////////////////////////////
   render() {
@@ -189,7 +196,7 @@ export default class App extends Component {
      console.log("ready");
         this.function(this.state.transcribed);
     }
-   
+   this.readWav();
     // if(this.state.transcribed!=null){
     //   this.function(this.state.transcribed,2);
     // }

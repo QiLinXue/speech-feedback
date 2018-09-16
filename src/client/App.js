@@ -1,10 +1,13 @@
 import React, { Component } from "react";
 import "./app.css";
+import ReactChartkick, { LineChart, PieChart } from "react-chartkick";
+import Chart from "chart.js";
+
+ReactChartkick.addAdapter(Chart);
 
 export default class App extends Component {
   state = {
-    inputText: null,
-    transcribed: "I am um an adult um yeah.",
+    transcribed: null,
     positivity: null,
     keyPhrases: [],
     audioLength: null,
@@ -12,7 +15,8 @@ export default class App extends Component {
     positivityA: null,
     positivityB: null,
     positivityC: null,
-    fillNum: 0
+    fillNum: null,
+    clicked: false
   };
 
   componentDidMount() {
@@ -97,9 +101,11 @@ export default class App extends Component {
   //Transcribes speak.wav
   ///////////////////////////////////////////////////////////
   handleSubmitTranscribe = event => {
+    if (this.state.clicked) return;
     event.preventDefault();
     console.log("transcript submition");
     //Transcribe speak.wav
+    this.setState({ clicked: true });
     this.getAudioText();
     console.log("2");
   };
@@ -190,63 +196,13 @@ export default class App extends Component {
         <div className="jumbotron jumbotron-fluid">
           <div className="container">
             <h1 className="display-4">Speech Teech</h1>
-            <p className="lead">
-              This is a modified jumbotron that occupies the entire horizontal
-              space of its parent.
-            </p>
+            <h6 className="lead">
+              {(transcribed === null &&
+                "Giving You The Best Feedback Ever! Click transcribe and your audio will appear here!") ||
+                transcribed}
+            </h6>
           </div>
         </div>
-        <div className="card">
-          <div className="card-body">
-            <h5 className="card-title">Words Per Minute</h5>
-            <span className="btn btn-primary">{WPM} WPM</span>
-            <p className="card-text">
-              Some quick example text to build on the card title and make up the
-              bulk of the card's content.
-            </p>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="card-body">
-            <h5 className="card-title">Overall Positivity</h5>
-            <span className="btn btn-primary">{positivity}% Positive</span>
-            <p className="card-text">
-              Some quick example text to build on the card title and make up the
-              bulk of the card's content.
-            </p>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="card-body">
-            <h5 className="card-title">Filler Words</h5>
-            <span className="btn btn-primary">{fillNum} Stutters</span>
-            <p className="card-text">
-              Some quick example text to build on the card title and make up the
-              bulk of the card's content.
-            </p>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="card-body">
-            <h5 className="card-title">Major Topics</h5>
-            <span className="btn btn-primary">
-              {keyPhrases.length} main topics
-            </span>
-            <p className="card-text">
-              Some quick example text to build on the card title and make up the
-              bulk of the card's content.
-            </p>
-            <ul>
-              {this.state.keyPhrases.map(keyPhrases => (
-                <li key={keyPhrases}>{keyPhrases}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
         <input
           onClick={this.handleSubmitTranscribe}
           type="submit"
@@ -259,17 +215,95 @@ export default class App extends Component {
           className="btn btn-success btn-lg btn-block"
           value="Analyze Audio Transcriptions"
         />
-        <input
+        <div className="card">
+          <div className="card-body">
+            <h5 className="card-title">Words Per Minute</h5>
+            <span className="btn btn-primary">
+              {WPM} {WPM === null && "TBA"} WPM
+            </span>
+            <p className="card-text">
+              Although it varies, the average speaker can have a 130 wpm
+              conversation. However, this does not mean it will translate to a
+              130 wpm presentation. Nervousness sometimes make people go faster
+              and forgetfullness makes people go slower. Ensure you practice
+              thouroughly to control your pace.
+            </p>
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="card-body">
+            <h5 className="card-title">Overall Positivity</h5>
+            <button className="btn btn-primary">
+              {positivity}
+              {positivity === null && "TBA"}% Positive
+            </button>
+            <p className="card-text">
+              In most scenarios, it is important to have a positive outlook to
+              keep your audience engaged. Although it is perfectly fine to start
+              off with negative statements, you should strive to end off on a
+              positive note.
+            </p>
+            <ul>
+              <li>
+                Beginning: {positivityA}
+                {positivity === null && "TBA"}% Positivity
+              </li>
+              <li>
+                Middle: {positivityB}
+                {positivity === null && "TBA"}% Positivity
+              </li>
+              <li>
+                End: {positivityC}
+                {positivity === null && "TBA"}% Positivity
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="card-body">
+            <h5 className="card-title">Filler Words</h5>
+            <span className="btn btn-primary">
+              {fillNum}
+              {fillNum === null && "TBA"} Stutters
+            </span>
+            <p className="card-text">
+              Uh... um... uh... everyone hates filler words. You can solve these
+              by practicing more. Even silence is better than filler words! To
+              be safe, you can always bring a waterbottle and take a sip when
+              you forget what you wanted to say.
+            </p>
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="card-body">
+            <h5 className="card-title">Major Topics</h5>
+            <span className="btn btn-primary">
+              {keyPhrases.length} main topics
+            </span>
+            <p className="card-text">
+              According to you, what are the major aspects of your presentation?
+              How does it compare to the list below? Are you ensuring you're
+              staying on topic? (list below sorted in order of significance)
+            </p>
+            <ul>
+              {this.state.keyPhrases.map(keyPhrases => (
+                <li key={keyPhrases}>{keyPhrases}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* <input
           type="file"
           accept="audio/*"
           capture
           id="recorder"
           onChange={this.test}
-        />
+        /> */}
       </div>
     );
   }
-
-  //FUNCTIONS
-  ///////////////////////////////////////////////////////////
 }

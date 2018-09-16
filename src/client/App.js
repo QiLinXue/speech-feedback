@@ -1,9 +1,12 @@
 import React, { Component } from "react";
 import "./app.css";
+import ReactChartkick, { LineChart, PieChart } from "react-chartkick";
+import Chart from "chart.js";
+
+ReactChartkick.addAdapter(Chart);
 
 export default class App extends Component {
   state = {
-    inputText: null,
     transcribed: null,
     positivity: null,
     keyPhrases: [],
@@ -169,11 +172,11 @@ export default class App extends Component {
         <div className="jumbotron jumbotron-fluid">
           <div className="container">
             <h1 className="display-4">Speech Teech</h1>
-            <p className="lead">
+            <h6 className="lead">
               {(transcribed === null &&
                 "Giving You The Best Feedback Ever! Click transcribe and your audio will appear here!") ||
                 transcribed}
-            </p>
+            </h6>
           </div>
         </div>
         <input
@@ -195,8 +198,11 @@ export default class App extends Component {
               {WPM} {WPM === null && "TBA"} WPM
             </span>
             <p className="card-text">
-              Some quick example text to build on the card title and make up the
-              bulk of the card's content.
+              Although it varies, the average speaker can have a 130 wpm
+              conversation. However, this does not mean it will translate to a
+              130 wpm presentation. Nervousness sometimes make people go faster
+              and forgetfullness makes people go slower. Ensure you practice
+              thouroughly to control your pace.
             </p>
           </div>
         </div>
@@ -204,14 +210,30 @@ export default class App extends Component {
         <div className="card">
           <div className="card-body">
             <h5 className="card-title">Overall Positivity</h5>
-            <span className="btn btn-primary">
+            <button className="btn btn-primary">
               {positivity}
               {positivity === null && "TBA"}% Positive
-            </span>
+            </button>
             <p className="card-text">
-              Some quick example text to build on the card title and make up the
-              bulk of the card's content.
+              In most scenarios, it is important to have a positive outlook to
+              keep your audience engaged. Although it is perfectly fine to start
+              off with negative statements, you should strive to end off on a
+              positive note.
             </p>
+            <ul>
+              <li>
+                Beginning: {positivityA}
+                {positivity === null && "TBA"}% Positivity
+              </li>
+              <li>
+                Middle: {positivityB}
+                {positivity === null && "TBA"}% Positivity
+              </li>
+              <li>
+                End: {positivityC}
+                {positivity === null && "TBA"}% Positivity
+              </li>
+            </ul>
           </div>
         </div>
 
@@ -223,8 +245,10 @@ export default class App extends Component {
               {fillNum === null && "TBA"} Stutters
             </span>
             <p className="card-text">
-              Some quick example text to build on the card title and make up the
-              bulk of the card's content.
+              Uh... um... uh... everyone hates filler words. You can solve these
+              by practicing more. Even silence is better than filler words! To
+              be safe, you can always bring a waterbottle and take a sip when
+              you forget what you wanted to say.
             </p>
           </div>
         </div>
@@ -236,8 +260,9 @@ export default class App extends Component {
               {keyPhrases.length} main topics
             </span>
             <p className="card-text">
-              Some quick example text to build on the card title and make up the
-              bulk of the card's content.
+              According to you, what are the major aspects of your presentation?
+              How does it compare to the list below? Are you ensuring you're
+              staying on topic? (list below sorted in order of significance)
             </p>
             <ul>
               {this.state.keyPhrases.map(keyPhrases => (
@@ -247,17 +272,14 @@ export default class App extends Component {
           </div>
         </div>
 
-        <input
+        {/* <input
           type="file"
           accept="audio/*"
           capture
           id="recorder"
           onChange={this.test}
-        />
+        /> */}
       </div>
     );
   }
-
-  //FUNCTIONS
-  ///////////////////////////////////////////////////////////
 }

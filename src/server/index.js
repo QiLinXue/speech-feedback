@@ -7,7 +7,7 @@ app.use(express.static("dist"));
 
 ////
 
-// const sampleAudio = ""./data/test1.wav"";
+const sampleAudio = "./data/test1.wav";
 
 ///////////////////////////////////////////////
 // Azure
@@ -70,7 +70,7 @@ app.get("/api/transcribeSample", (req, res) => {
       console.log("recognizer is stopped.");
     });
 
-    await recognizer.sendFile("./data/test1.wav");
+    await recognizer.sendFile(sampleAudio);
     console.log("file sent.");
   })();
 });
@@ -216,7 +216,7 @@ app.get("/api/getEmotions", (req, res) => {
 app.get("/api/getAudioLength", (req, res) => {
   var wavFileInfo = require("wav-file-info");
 
-  wavFileInfo.infoByFilename("./data/test1.wav", function(err, info) {
+  wavFileInfo.infoByFilename(sampleAudio, function(err, info) {
     if (err) throw err;
     res.send({ audioLength: info.duration });
   });
@@ -229,7 +229,7 @@ app.get("/api/getWPM/:text", (req, res) => {
 
   var wavFileInfo = require("wav-file-info");
 
-  wavFileInfo.infoByFilename("./data/test1.wav", function(err, info) {
+  wavFileInfo.infoByFilename(sampleAudio, function(err, info) {
     if (err) throw err;
     length = info.duration;
     words = inputText.split(" ").length;

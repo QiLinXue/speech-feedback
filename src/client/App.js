@@ -1,18 +1,22 @@
 import React, { Component } from "react";
 import "./app.css";
+import ReactChartkick, { LineChart, PieChart } from "react-chartkick";
+import Chart from "chart.js";
+
+ReactChartkick.addAdapter(Chart);
 
 export default class App extends Component {
   state = {
-    inputText: null,
-    transcribed:
-      "Almost 20 years have passed since 9-11 It is time to take stock of where we stand and stop and think It is time to ask ourselves have the assumptions and policies we developed in the wake of those tragic events truly made us more secure Have they made our societies both in Europe and in the United States more resilient I've worked all my life in the field of security and defense and I am convinced that now more than ever we need to radically reframe the way we think and act about security and especially about international security By international security I actually mean what we do how we prepare our countries to better respond and prevent external threats and how we protect our citizens The key to both is to focus on protecting civilians both in our own countries and in those where we are present in the name of security",
+    transcribed: null,
     positivity: null,
-    keyPhrases: null,
+    keyPhrases: [],
     audioLength: null,
     WPM: null,
     positivityA: null,
     positivityB: null,
-    positivityC: null
+    positivityC: null,
+    fillNum: null,
+    clicked: false
   };
 
   componentDidMount() {
@@ -25,9 +29,12 @@ export default class App extends Component {
 
   //Transcribe Audio
   getAudioText() {
+    console.log(3);
     fetch("/api/transcribeSample")
       .then(res => res.json())
-      .then(user => this.setState({ transcribed: user.transcribed }));
+      .then(user => this.setState({ transcribed: user.transcribed }))
+      .then(console.log("ah"));
+    console.log(4);
   }
 
   //Get Audio Length
@@ -46,7 +53,7 @@ export default class App extends Component {
 
   //Get Key Phrases
   getKeyPhrases(text) {
-    fetch(`/api/getKeyPhrases/${text}`)
+    fetch(`/api/getKeyPhrases2/${text}`)
       .then(res => res.json())
       .then(user => this.setState({ keyPhrases: user.keyPhrases }));
   }
@@ -81,15 +88,6 @@ export default class App extends Component {
   //Submit Button
   ///////////////////////////////////////////////////////////
 
-  handleSubmitTextAnalyze = event => {
-    event.preventDefault(); //weird thing with react so states don't revert to original
-
-    this.getPositivity(this.state.inputText);
-    this.getKeyPhrases(this.state.inputText);
-    this.getWPM(this.state.inputText);
-    this.getMiniPositivity(this.state.inputText);
-  };
-
   handleSubmitTranscriptionAnalyze = event => {
     event.preventDefault();
 
@@ -97,56 +95,63 @@ export default class App extends Component {
     this.getKeyPhrases(this.state.transcribed);
     this.getWPM(this.state.transcribed);
     this.getMiniPositivity(this.state.transcribed);
+    this.countFillers();
   };
 
   //Transcribes speak.wav
   ///////////////////////////////////////////////////////////
   handleSubmitTranscribe = event => {
+    if (this.state.clicked) return;
     event.preventDefault();
-
+    console.log("transcript submition");
     //Transcribe speak.wav
+    this.setState({ clicked: true });
     this.getAudioText();
+    console.log("2");
   };
 
-  //Updates State when user text input changes (won't be needed for final version)
-  ///////////////////////////////////////////////////////////
-  handleInputUpdate = evt => {
-    this.setState({
-      inputText: evt.target.value
-    });
-  };
-
-  //Code written by Alex to seperate String
-  seperateString(variable, length) {
-    console.log(variable);
-
-    var seperate = variable.split(" ");
-    var out = new Array(Math.round(seperate.length / length - 0.1));
-
-    console.log(out.length);
-    var index = 0;
-    var pos = 0;
-    while (true) {
-      var each = "";
-      for (var count = 0; count < length && index < seperate.length; count++) {
-        seperate[index] = seperate[index].replace(".", "");
-        each = each + seperate[index] + " ";
-        index++;
-      }
-      console.log(each);
-      out[pos] = each;
-      pos++;
-      if (index == seperate.length) {
-        break;
+  //Count the filler words
+  countFillers = event => {
+    var temp = this.state.transcribed;
+    var tempArray = temp.split(" ");
+    var num = 0;
+    for (var i = 0; i < tempArray.length; i++) {
+      if (tempArray[i] == "um" || tempArray[i] == "uh") {
+        num++;
       }
     }
-    // for(var count=0;count<out.length;count++){
-    //   console.log(out[count]);
-    // }
-    //return out;
-    this.setState({ transcribedList: out });
-  }
+    console.log(num);
+    this.setState({ fillNum: num });
+  };
 
+  // test(event) {
+  //   console.log("hello world!!!!");
+
+  //   var file = event.target.files[0];
+  //   // Do something with the audio file.
+  //   var url = URL.createObjectURL(file);
+  //   var au = document.createElement("audio");
+  //   var li = document.createElement("li");
+  //   au.src = url;
+
+  //   li.appendChild(au);
+
+  //   var filename = new Date().toISOString();
+  //   var upload = document.createElement("a");
+
+  //   console.log(file.name);
+
+  //   fetch("/api/audio", {
+  //     method: "POST", // or 'PUT'
+  //     body: file, // data can be `string` or {object}!
+  //     headers: {
+  //       "Content-Type": "audio/wav"
+  //     }
+  //   });
+  // }
+  ////
+
+  ////
   //What it actually returns - JSX code (combination of html and javascript)
   ///////////////////////////////////////////////////////////
   render() {
@@ -157,59 +162,124 @@ export default class App extends Component {
     const { positivity } = this.state;
     const { keyPhrases } = this.state;
     const { WPM } = this.state;
-    const { transcribedList } = this.state;
     const { positivityA } = this.state;
     const { positivityB } = this.state;
     const { positivityC } = this.state;
+    const { fillNum } = this.state;
 
-    // if(this.state.transcribed!=null){
-    //   this.function(this.state.transcribed,2);
-    // }
     return (
       <div>
-        <h1>Transcribed: {transcribed}</h1>
-        <h1>Text: {inputText}</h1>
-        <h1>Key Words: {keyPhrases} </h1>
-        <h1>WPM: {WPM}</h1>
-        <h1>Overall Positivity: {positivity}</h1>
-        <ul>
-          <li>Beginning Positivity: {positivityA}</li>
-          <li>Middle Positivity: {positivityB}</li>
-          <li>End Positivity: {positivityC}</li>
-        </ul>
-
-        <form>
-          <label>
-            Input Sentence:
-            <input
-              type="text"
-              name="name"
-              value={inputText}
-              onChange={evt => this.handleInputUpdate(evt)}
-            />
-          </label>
-
-          <input
-            onClick={this.handleSubmitTextAnalyze}
-            type="submit"
-            value="Analyze Input Text"
-          />
-        </form>
-
+        <div className="jumbotron jumbotron-fluid">
+          <div className="container">
+            <h1 className="display-4">Speech Teech</h1>
+            <h6 className="lead">
+              {(transcribed === null &&
+                "Giving You The Best Feedback Ever! Click transcribe and your audio will appear here!") ||
+                transcribed}
+            </h6>
+          </div>
+        </div>
         <input
           onClick={this.handleSubmitTranscribe}
           type="submit"
+          className="btn btn-primary btn-lg btn-block"
           value="Transcribe Audio"
         />
         <input
           onClick={this.handleSubmitTranscriptionAnalyze}
           type="submit"
+          className="btn btn-success btn-lg btn-block"
           value="Analyze Audio Transcriptions"
         />
+        <div className="card">
+          <div className="card-body">
+            <h5 className="card-title">Words Per Minute</h5>
+            <span className="btn btn-primary">
+              {WPM} {WPM === null && "TBA"} WPM
+            </span>
+            <p className="card-text">
+              Although it varies, the average speaker can have a 130 wpm
+              conversation. However, this does not mean it will translate to a
+              130 wpm presentation. Nervousness sometimes make people go faster
+              and forgetfullness makes people go slower. Ensure you practice
+              thouroughly to control your pace.
+            </p>
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="card-body">
+            <h5 className="card-title">Overall Positivity</h5>
+            <button className="btn btn-primary">
+              {positivity}
+              {positivity === null && "TBA"}% Positive
+            </button>
+            <p className="card-text">
+              In most scenarios, it is important to have a positive outlook to
+              keep your audience engaged. Although it is perfectly fine to start
+              off with negative statements, you should strive to end off on a
+              positive note.
+            </p>
+            <ul>
+              <li>
+                Beginning: {positivityA}
+                {positivity === null && "TBA"}% Positivity
+              </li>
+              <li>
+                Middle: {positivityB}
+                {positivity === null && "TBA"}% Positivity
+              </li>
+              <li>
+                End: {positivityC}
+                {positivity === null && "TBA"}% Positivity
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="card-body">
+            <h5 className="card-title">Filler Words</h5>
+            <span className="btn btn-primary">
+              {fillNum}
+              {fillNum === null && "TBA"} Stutters
+            </span>
+            <p className="card-text">
+              Uh... um... uh... everyone hates filler words. You can solve these
+              by practicing more. Even silence is better than filler words! To
+              be safe, you can always bring a waterbottle and take a sip when
+              you forget what you wanted to say.
+            </p>
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="card-body">
+            <h5 className="card-title">Major Topics</h5>
+            <span className="btn btn-primary">
+              {keyPhrases.length} main topics
+            </span>
+            <p className="card-text">
+              According to you, what are the major aspects of your presentation?
+              How does it compare to the list below? Are you ensuring you're
+              staying on topic? (list below sorted in order of significance)
+            </p>
+            <ul>
+              {this.state.keyPhrases.map(keyPhrases => (
+                <li key={keyPhrases}>{keyPhrases}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* <input
+          type="file"
+          accept="audio/*"
+          capture
+          id="recorder"
+          onChange={this.test}
+        /> */}
       </div>
     );
   }
-
-  //FUNCTIONS
-  ///////////////////////////////////////////////////////////
 }

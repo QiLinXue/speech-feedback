@@ -172,19 +172,6 @@ export default class App extends Component {
             </p>
           </div>
         </div>
-        <span className="badge badge-primary m-2">
-          Transcribed: {transcribed}
-        </span>
-        <h1>Key Words: {keyPhrases} </h1>
-        <h1>WPM: {WPM}</h1>
-        <h1>Overall Positivity: {positivity}</h1>
-        <ul>
-          <li>Beginning Positivity: {positivityA}</li>
-          <li>Middle Positivity: {positivityB}</li>
-          <li>End Positivity: {positivityC}</li>
-        </ul>
-        <h1>Filler Words: {fillNum}</h1>
-
         <div className="card">
           <div className="card-body">
             <h5 className="card-title">Words Per Minute</h5>
@@ -210,7 +197,7 @@ export default class App extends Component {
         <div className="card">
           <div className="card-body">
             <h5 className="card-title">Filler Words</h5>
-            <span className="btn btn-primary">{fillNum} Studders</span>
+            <span className="btn btn-primary">{fillNum} Stutters</span>
             <p className="card-text">
               Some quick example text to build on the card title and make up the
               bulk of the card's content.

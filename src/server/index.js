@@ -7,8 +7,10 @@ app.use(express.static("dist"));
 
 ////
 
+// const sampleAudio = ""./data/test4.wav"";
+
 ///////////////////////////////////////////////
-//Azure
+// Azure
 ("use strict");
 
 let https = require("https");
@@ -50,7 +52,7 @@ app.get("/api/transcribeSample", (req, res) => {
   (async function() {
     const options = {
       language: "en-US",
-      subscriptionKey: "1f7e738aa49a4270937366dfe045b3fd"
+      subscriptionKey: process.env.AZURE_API_BING_SPEECH
     };
 
     const recognizer = new speechService(options);
@@ -68,7 +70,7 @@ app.get("/api/transcribeSample", (req, res) => {
       console.log("recognizer is stopped.");
     });
 
-    await recognizer.sendFile("speak.wav");
+    await recognizer.sendFile("./data/test4.wav");
     console.log("file sent.");
   })();
 });
@@ -214,7 +216,7 @@ app.get("/api/getEmotions", (req, res) => {
 app.get("/api/getAudioLength", (req, res) => {
   var wavFileInfo = require("wav-file-info");
 
-  wavFileInfo.infoByFilename("speak.wav", function(err, info) {
+  wavFileInfo.infoByFilename("./data/test4.wav", function(err, info) {
     if (err) throw err;
     res.send({ audioLength: info.duration });
   });
@@ -227,7 +229,7 @@ app.get("/api/getWPM/:text", (req, res) => {
 
   var wavFileInfo = require("wav-file-info");
 
-  wavFileInfo.infoByFilename("speak.wav", function(err, info) {
+  wavFileInfo.infoByFilename("./data/test4.wav", function(err, info) {
     if (err) throw err;
     length = info.duration;
     words = inputText.split(" ").length;

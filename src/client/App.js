@@ -4,10 +4,9 @@ import "./app.css";
 export default class App extends Component {
   state = {
     inputText: null,
-    transcribed:
-      "hi uh my name is um",
+    transcribed: "I am um an adult um yeah.",
     positivity: null,
-    keyPhrases: null,
+    keyPhrases: [],
     audioLength: null,
     WPM: null,
     positivityA: null,
@@ -26,9 +25,12 @@ export default class App extends Component {
 
   //Transcribe Audio
   getAudioText() {
+    console.log(3);
     fetch("/api/transcribeSample")
       .then(res => res.json())
-      .then(user => this.setState({ transcribed: user.transcribed }));
+      .then(user => this.setState({ transcribed: user.transcribed }))
+      .then(console.log("ah"));
+    console.log(4);
   }
 
   //Get Audio Length
@@ -47,7 +49,7 @@ export default class App extends Component {
 
   //Get Key Phrases
   getKeyPhrases(text) {
-    fetch(`/api/getKeyPhrases/${text}`)
+    fetch(`/api/getKeyPhrases2/${text}`)
       .then(res => res.json())
       .then(user => this.setState({ keyPhrases: user.keyPhrases }));
   }
@@ -82,15 +84,6 @@ export default class App extends Component {
   //Submit Button
   ///////////////////////////////////////////////////////////
 
-  handleSubmitTextAnalyze = event => {
-    event.preventDefault(); //weird thing with react so states don't revert to original
-
-    this.getPositivity(this.state.inputText);
-    this.getKeyPhrases(this.state.inputText);
-    this.getWPM(this.state.inputText);
-    this.getMiniPositivity(this.state.inputText);
-  };
-
   handleSubmitTranscriptionAnalyze = event => {
     event.preventDefault();
 
@@ -98,79 +91,61 @@ export default class App extends Component {
     this.getKeyPhrases(this.state.transcribed);
     this.getWPM(this.state.transcribed);
     this.getMiniPositivity(this.state.transcribed);
+    this.countFillers();
   };
 
   //Transcribes speak.wav
   ///////////////////////////////////////////////////////////
   handleSubmitTranscribe = event => {
     event.preventDefault();
-
+    console.log("transcript submition");
     //Transcribe speak.wav
     this.getAudioText();
+    console.log("2");
   };
 
-  //Updates State when user text input changes (won't be needed for final version)
-  ///////////////////////////////////////////////////////////
-  handleInputUpdate = evt => {
-    this.setState({
-      inputText: evt.target.value
-    });
-  };
-
-  //Code written by Alex to seperate String
-  seperateString(variable, length) {
-    console.log(variable);
-
-    var seperate = variable.split(" ");
-    var out = new Array(Math.round(seperate.length / length - 0.1));
-
-    console.log(out.length);
-    var index = 0;
-    var pos = 0;
-    while (true) {
-      var each = "";
-      for (var count = 0; count < length && index < seperate.length; count++) {
-        seperate[index] = seperate[index].replace(".", "");
-        each = each + seperate[index] + " ";
-        index++;
+  //Count the filler words
+  countFillers = event => {
+    var temp = this.state.transcribed;
+    var tempArray = temp.split(" ");
+    var num = 0;
+    for (var i = 0; i < tempArray.length; i++) {
+      if (tempArray[i] == "um" || tempArray[i] == "uh") {
+        num++;
       }
-      console.log(each);
-      out[pos] = each;
-      pos++;
-      if (index == seperate.length) {
-        break;
-      }
-    }
-    // for(var count=0;count<out.length;count++){
-    //   console.log(out[count]);
-    // }
-    //return out;
-    this.setState({ transcribedList: out });
-  }
-  function(variable){
-    var index=0;
-    var num=0;
-    while(index<variable.length){
-      index=variable.indexOf("um",index);
-      if(index==-1){
-        break;
-      }
-      index++;
-      num++;
-    }
-    index=0;
-    while(index<variable.length){
-      index=variable.indexOf("uh",index);
-      if(index==-1){
-        break;
-      }
-      index++;
-      num++;
     }
     console.log(num);
-    return num;
-   
-  }
+    this.setState({ fillNum: num });
+  };
+
+  // test(event) {
+  //   console.log("hello world!!!!");
+
+  //   var file = event.target.files[0];
+  //   // Do something with the audio file.
+  //   var url = URL.createObjectURL(file);
+  //   var au = document.createElement("audio");
+  //   var li = document.createElement("li");
+  //   au.src = url;
+
+  //   li.appendChild(au);
+
+  //   var filename = new Date().toISOString();
+  //   var upload = document.createElement("a");
+
+  //   console.log(file.name);
+
+  //   fetch("/api/audio", {
+  //     method: "POST", // or 'PUT'
+  //     body: file, // data can be `string` or {object}!
+  //     headers: {
+  //       "Content-Type": "audio/wav"
+  //     }
+  //   });
+  // }
+  ////
+
+  ////
   //What it actually returns - JSX code (combination of html and javascript)
   ///////////////////////////////////////////////////////////
   render() {
@@ -181,22 +156,25 @@ export default class App extends Component {
     const { positivity } = this.state;
     const { keyPhrases } = this.state;
     const { WPM } = this.state;
-    const { transcribedList } = this.state;
     const { positivityA } = this.state;
     const { positivityB } = this.state;
     const { positivityC } = this.state;
-    if(transcribed!=null){
-     console.log("ready");
-        this.function(this.state.transcribed);
-    }
-   
-    // if(this.state.transcribed!=null){
-    //   this.function(this.state.transcribed,2);
-    // }
+    const { fillNum } = this.state;
+
     return (
       <div>
-        <h1>Transcribed: {transcribed}</h1>
-        <h1>Text: {inputText}</h1>
+        <div className="jumbotron jumbotron-fluid">
+          <div className="container">
+            <h1 className="display-4">Speech Teech</h1>
+            <p className="lead">
+              This is a modified jumbotron that occupies the entire horizontal
+              space of its parent.
+            </p>
+          </div>
+        </div>
+        <span className="badge badge-primary m-2">
+          Transcribed: {transcribed}
+        </span>
         <h1>Key Words: {keyPhrases} </h1>
         <h1>WPM: {WPM}</h1>
         <h1>Overall Positivity: {positivity}</h1>
@@ -205,34 +183,77 @@ export default class App extends Component {
           <li>Middle Positivity: {positivityB}</li>
           <li>End Positivity: {positivityC}</li>
         </ul>
+        <h1>Filler Words: {fillNum}</h1>
 
-        <form>
-          <label>
-            Input Sentence:
-            <input
-              type="text"
-              name="name"
-              value={inputText}
-              onChange={evt => this.handleInputUpdate(evt)}
-            />
-          </label>
+        <div className="card">
+          <div className="card-body">
+            <h5 className="card-title">Words Per Minute</h5>
+            <span className="btn btn-primary">{WPM} WPM</span>
+            <p className="card-text">
+              Some quick example text to build on the card title and make up the
+              bulk of the card's content.
+            </p>
+          </div>
+        </div>
 
-          <input
-            onClick={this.handleSubmitTextAnalyze}
-            type="submit"
-            value="Analyze Input Text"
-          />
-        </form>
+        <div className="card">
+          <div className="card-body">
+            <h5 className="card-title">Overall Positivity</h5>
+            <span className="btn btn-primary">{positivity}% Positive</span>
+            <p className="card-text">
+              Some quick example text to build on the card title and make up the
+              bulk of the card's content.
+            </p>
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="card-body">
+            <h5 className="card-title">Filler Words</h5>
+            <span className="btn btn-primary">{fillNum} Studders</span>
+            <p className="card-text">
+              Some quick example text to build on the card title and make up the
+              bulk of the card's content.
+            </p>
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="card-body">
+            <h5 className="card-title">Major Topics</h5>
+            <span className="btn btn-primary">
+              {keyPhrases.length} main topics
+            </span>
+            <p className="card-text">
+              Some quick example text to build on the card title and make up the
+              bulk of the card's content.
+            </p>
+            <ul>
+              {this.state.keyPhrases.map(keyPhrases => (
+                <li key={keyPhrases}>{keyPhrases}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
 
         <input
           onClick={this.handleSubmitTranscribe}
           type="submit"
+          className="btn btn-primary btn-lg btn-block"
           value="Transcribe Audio"
         />
         <input
           onClick={this.handleSubmitTranscriptionAnalyze}
           type="submit"
+          className="btn btn-success btn-lg btn-block"
           value="Analyze Audio Transcriptions"
+        />
+        <input
+          type="file"
+          accept="audio/*"
+          capture
+          id="recorder"
+          onChange={this.test}
         />
       </div>
     );
